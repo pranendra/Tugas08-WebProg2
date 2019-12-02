@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <script>
+        function tes() {
+            json = '{"message": {"pesan": [ {"id": "1", "user": "Nurmi", "text": "Halo apa kabar", "time": "2019-11-13 13:56:05" },{"id": "2", "user": "desrizal", "text": "kabar baik", "time": "2019-11-13 00:00:00" },{"id": "3", "user": "nurmi", "text": "lagi dimana", "time": "2019-11-13 00:00:00" },{"id": "4", "user": "desrizal", "text": "belitung", "time": "2019-11-13 00:00:00" }]}}'
+
+            var teks_div = document.getElementById('divteks');
+            var response = eval("(" +json+")");
+            for(i =0; i< response.message.pesan.length; i++){
+                // teks_div.innerHTML += response.message.pesan[i].user;
+                // teks_div.innerHTML += '&nbsp;&nbsp;<font size=1>' + response.message.pesan[i].time + '</font><br />';
+                // teks_div.innerHTML += response.message.pesan[i].text + '<br />';
+                // teks_div.innerHTML += '<div class="box">';
+                // teks_div.innerHTML += '<span>'+response.message.pesan[i].user+'</span><br>';
+                // teks_div.innerHTML += '<div class="isi">';
+                // teks_div.innerHTML += '<span class="kiri">'+response.message.pesan[i].text+'</span>';
+                // teks_div.innerHTML += '<span class="kanan">'+response.message.pesan[i].text+'</span>';
+                // teks_div.innerHTML += '</div>';
+                // teks_div.innerHTML += '</div>';
+                teks_div.innerHTML += '<div class="box"> <span>'+response.message.pesan[i].user+'</span><br> <div class="isi"> <span class="kiri">'+response.message.pesan[i].text+'</span> <span class="kanan">'+response.message.pesan[i].time+'</span> </div> </div>';
+            }
+        }
+    </script>
+</head>
+<body onload=tes()>
+    <div id="divteks"></div>
+    <style>
+    .box{
+        background: #BDB76B;
+        /* display: inline-block; */
+        max-width: 250px;
+        padding: 8px;
+        border-radius: 20px;
+    }
+    .box span{
+        line-height: 1.8;
+        font-weight: bold;
+    }
+    .box .isi{
+        display: flow-root;
+    }
+    .box .isi span.kiri{
+        line-height: 1.2;
+        font-weight: normal;
+        float: left;
+    }
+    .box .isi span.kanan{
+        line-height: 1.2;
+        font-weight: normal;
+        float: right;
+        padding-top: 5px;
+        font-size:10;
+    }
+    </style>
+    <br><br>
+
+    <!-- <div class="box">
+        <span>response.message.pesan[i].user</span><br>
+        <div class="isi">
+            <span class="kiri">response.message.pesan[i].text</span>
+            <span class="kanan">response.message.pesan[i].text</span>
+        </div>
+    </div> -->
+
+    
+    
+
+</body>
+</html>

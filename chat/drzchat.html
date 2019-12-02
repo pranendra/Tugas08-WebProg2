@@ -1,0 +1,143 @@
+<html>
+
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script>
+        var ajaxku = buatAjax();
+        var tnama = 0;
+        var pesanakhir = 0;
+        var timer;
+        
+        function taruhNama() {
+            if (tnama == 0) {
+                var inpNama = document.getElementById("nama");
+                var divInpNama = document.getElementById("div-input-nama");
+                var tmbl_login = document.getElementById("tmbl_login");
+
+                if(inpNama.value != ""){
+                    tmbl_login.value = "Logout";
+                    tmbl_login.style = "background: #F02FC2 !important;transition:0.5s";
+                    inpNama.disabled = "true";
+                    
+                    tnama = 1;    
+                }else{
+                    alert("isi nama oh!");
+                }
+                
+            } else {
+                var inpNama = document.getElementById("nama");
+                var divInpNama = document.getElementById("div-input-nama");
+                var tmbl_login = document.getElementById("tmbl_login");
+
+                tmbl_login.value = "Login";
+                tmbl_login.style = "background: #6094EA !important;transition:0.5s";
+                inpNama.disabled = "";
+                
+                tnama = 0;
+            }
+            ambilPesan();
+        }
+
+        function buatAjax() {
+            if (window.XMLHttpRequest) {
+                return new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
+                return new ActiveXObject("Microsoft.XMLHTTP");
+            }
+        }
+
+        function ambilPesan() {
+            namaku = document.getElementById("nama").value
+            if (ajaxku.readyState == 4 || ajaxku.readyState == 0) {
+                ajaxku.open("GET", "ambilchat.php?akhir=" + pesanakhir + "&nama=" + namaku + "&sid=" + Math.random(), true);
+                ajaxku.onreadystatechange = aturAmbilPesan;
+                ajaxku.send(null);
+            }
+        }
+
+        function aturAmbilPesan() {
+            if (ajaxku.readyState == 4) {
+                var chat_div = document.getElementById("div_chat");
+                var inpNama = document.getElementById("nama");
+                var data = eval("(" + ajaxku.responseText + ")");
+                for (i = 0; i < data.messages.pesan.length; i++) {
+                    if(data.messages.pesan[i].teks == "Selamat datang di chatting room" || data.messages.pesan[i].teks.substr(-20, 20) == "bergabung dalam chat"){
+                        chat_div.innerHTML += '<span style="margin:0px auto 10px auto;display:table;text-align:center;color: #6094EA;">'+data.messages.pesan[i].nama+' '+data.messages.pesan[i].teks+'<span>';
+                    }else{
+                        if(data.messages.pesan[i].nama == inpNama.value){
+                            chat_div.innerHTML += '<div class="box float-right"> <span>'+data.messages.pesan[i].nama+'</span><br> <div class="isi"> <span class="kiri">'+data.messages.pesan[i].teks+'</span> <span class="kanan">&nbsp;&nbsp;'+data.messages.pesan[i].waktu+'&nbsp;&nbsp;</span> </div> </div><br><br><br>';
+                        }else{
+                            chat_div.innerHTML += '<div class="box float-left" style="background:#fff !important;color: #000000 !important;"> <span>'+data.messages.pesan[i].nama+'</span><br> <div class="isi"> <span class="kiri">'+data.messages.pesan[i].teks+'</span> <span class="kanan">&nbsp;&nbsp;'+data.messages.pesan[i].waktu+'&nbsp;&nbsp;</span> </div> </div><br><br><br>';
+                        }
+                    }
+                    
+                    chat_div.scrollTop = chat_div.scrollHeight;
+                    pesanakhir = data.messages.pesan[i].id;
+                }
+            }
+            timer = setTimeout("ambilPesan()",1000);
+        }
+
+        function kirimPesan() {
+            pesannya = document.getElementById('pesan').value;
+            namaku = document.getElementById('nama').value;
+            if (pesannya != "" && document.getElementById('nama').value != "") {
+                ajaxku.open('GET', `ambilchat.php?akhir=${pesanakhir}&nama=${namaku}&pesan=${pesannya}&sid=${Math.random()}`, true);
+                ajaxku.onreadystatechange = aturAmbilPesan;
+                console.log(`ambilchat.php?akhir=${pesanakhir}&nama=${namaku}&pesan=${pesannya}&sid=${Math.random()}`);
+                ajaxku.send(null);
+            } else {
+                alert("Nama atau pesan masih kosong");
+            }
+            document.getElementById('pesan').value = "";
+        }
+
+        function aturKirimPesan() {
+            clearInterval(timer);
+            ambilPesan();
+        }
+
+        function blockSubmit() {
+            kirimPesan();
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="box-chat">
+                    <div class="box-chat-header p-3">
+                        <form class="form-inline">
+                            <div class="box-form position-relative m-auto">
+                                <div class="form-group d-inline-block mx-sm-3 mb-2" id="div-input-nama">
+                                    <input type="text" class="form-control" name="name" id="nama" placeholder="Nama">
+                                </div>
+                                <input type="button" value="Login" id="tmbl_login" class="tmbl_login btn btn-primary pb-2" onclick="taruhNama()">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="box-chat-body">
+                        <div id="div_chat"></div>
+                    </div>
+                    <div class="box-chat-reply">
+                        <form onSubmit="return blockSubmit();" class="form-inline mt-3">
+                            <div class="box-form position-relative m-auto">
+                                <input type="text" name="pesan" id="pesan" class="form-control" placeholder="Ketik pesan disini" size="35" name="password" 
+                                maxlength="48">
+                                <input type="button" value="&#xf1d8" class="tmbl_kirim btn btn-primary pb-2 fas fa-paper-plane" onclick="kirimPesan()">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
